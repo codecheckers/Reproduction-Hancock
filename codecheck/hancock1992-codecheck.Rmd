@@ -170,17 +170,9 @@ all the necessary code.  The code was written in Matlab.
 
 The root Makefile contained targets to regenerate all of the figures using:
 ```{bash, eval=FALSE}
-make -j8 all
+make -j7 all
 ```
-
-The `*.stdout` files capture the output from each run; for each run,
-there are two output files, e.g. for run 1: `1-dynamics.qs` and
-`1-totals.qs`.  These `*.qs` files are then processed by the script
-`UK-view.R` to make the output figures.
-
-```{bash, eval=FALSE}
-Rscript UK-view.R
-```
+This took 7m 10s to complete on a large workstation.
 
 \setcounter{table}{0}
 \setcounter{figure}{0}
@@ -189,96 +181,22 @@ Rscript UK-view.R
 
 
 \clearpage
-```{r echo=FALSE, fig.cap=outputs[1, "comments"]}
+
+```{r, echo=FALSE, fig.cap=outputs[1:7,"comments"]}
 knitr::include_graphics(dest_files[1])
-```
-
-\clearpage
-
-
-<!-- The tables are quite wide, so we reduce the font size so that we -->
-<!-- can fit onto the page; could also use sidewaystable but that is a -->
-<!-- bit clunky. -->
-```{r, echo=FALSE, results='asis'}
-tab12week = read.csv(dest_files[2])
-print(xtable(tab12week, 
-             caption=outputs[2, "comments"]),
-      size="\\fontsize{6pt}{7pt}\\selectfont",
-      include.rownames=FALSE,
-      include.colnames=TRUE,
-      sanitize.text.function = function(x){x},
-      comment=FALSE)
-```
-
-\clearpage
-```{r echo=FALSE, fig.cap=outputs[3, "comments"]}
+cat('\n\n')
+knitr::include_graphics(dest_files[2])
+cat('\n\n')
 knitr::include_graphics(dest_files[3])
-```
-
-\clearpage
-```{r echo=FALSE, fig.cap=outputs[4, "comments"]}
+cat('\n\n')
 knitr::include_graphics(dest_files[4])
-```
-
-\clearpage
-```{r echo=FALSE, fig.cap=outputs[5, "comments"]}
+cat('\n\n')
 knitr::include_graphics(dest_files[5])
+cat('\n\n')
+knitr::include_graphics(dest_files[6])
+cat('\n\n')
+knitr::include_graphics(dest_files[7])
 ```
-
-
-\clearpage
-
-```{r, echo=FALSE, results='asis'}
-lockdown = read.csv(dest_files[6])
-print(xtable(lockdown, 
-             caption=outputs[6, "comments"]),
-      size="\\fontsize{6pt}{7pt}\\selectfont",
-      ##floating = TRUE, floating.environment = "sidewaystable",
-      include.rownames=FALSE,
-      include.colnames=TRUE,
-      sanitize.text.function = function(x){x},
-      comment=FALSE)
-```
-
-\clearpage
-
-```{r, echo=FALSE, results='asis'}
-print(xtable(read.csv(dest_files[7]),
-             caption=outputs[7, "comments"]),
-      size="\\fontsize{6pt}{7pt}\\selectfont",
-      floating = TRUE, floating.environment = "sidewaystable",
-      include.rownames=FALSE,
-      include.colnames=TRUE,
-      sanitize.text.function = function(x){x},
-      comment=FALSE)
-```
-
-\clearpage
-```{r, echo=FALSE, results='asis'}
-print(xtable(read.csv(dest_files[8]),
-             caption=outputs[8, "comments"]),
-      size="\\fontsize{6pt}{7pt}\\selectfont",
-      ##floating = TRUE, floating.environment = "sidewaystable",
-      include.rownames=FALSE,
-      include.colnames=TRUE,
-      sanitize.text.function = function(x){x},
-      comment=FALSE)
-```
-
-\clearpage
-```{r, echo=FALSE, results='asis'}
-print(xtable(read.csv(dest_files[9]),
-             caption=outputs[9, "comments"]),
-      size="\\fontsize{6pt}{7pt}\\selectfont",
-      ##floating = TRUE, floating.environment = "sidewaystable",
-      include.rownames=FALSE,
-      include.colnames=TRUE,
-      sanitize.text.function = function(x){x},
-      comment=FALSE)
-```
-
-
-
 
 \clearpage
 # About this document
