@@ -6,11 +6,11 @@
 all: codecheck.pdf
 
 
-codecheck.pdf: davies2020-codecheck.Rmd preamble.sty ../codecheck.yml
+codecheck.pdf: hancock1992-codecheck.Rmd preamble.sty ../codecheck.yml
 	Rscript -e 'rmarkdown::render("$<", "pdf_document")'
-	cp davies2020-codecheck.pdf codecheck.pdf
+	cp hancock1992-codecheck.pdf codecheck.pdf
 
-davies2020-codecheck.html: davies2020-codecheck.Rmd ../codecheck.yml
+hancock1992-codecheck.html: hancock1992-codecheck.Rmd ../codecheck.yml
 	Rscript -e 'rmarkdown::render("$<")'
 
 .PHONY: run clean
