@@ -152,47 +152,25 @@ print(xt,
 
 # Summary
 
-I was able to reproduce the figures and tables in the paper.  The
-simulations took several days to run, and so in the codechecker repo I
-have included the results of the simulations (the `*.qs` files).  The
-figures however are not included in the main section of the repo, but
-are in the `codecheck/outputs` folder.
+This code was straightforward to codecheck.  The code came from Iain
+Davies, a Cambridge mathematics student, who worked on reimplementing
+the Hancock et al paper.  I asked him to ensure that the code for each
+figure could be re-run to generate a pdf.
 
 
 \clearpage
 
 # CODECHECKER notes
 
-The github repo <https://github.com/cmmid/covid-uk> contained all the
-necessary code.  I needed some
-system installations and R packages, but then was able to run the code.
-
-
-## Extra software installations
-
-Several extra linux and R packages were required.  These are
-documented in the file `install.R`, shown here:
-
-```{r, code = readLines("../install.R"), eval=FALSE}
-```
-
-I ran this on arch linux, but a Dockerfile is also available.
-
-
+The github repo
+<https://github.com/IainDaviesMaths/Reproduction-Hancock> contained
+all the necessary code.  The code was written in Matlab.
 
 ## Running the software to regenerate outputs.
 
-The only significant change to the two scripts was to ensure covid
-path was the current directory WITH a trailing slash.
-
-```{r eval=FALSE}
-covid_uk_path = "./"
-```
-
-
-I created a script to run the jobs in parallel on a cluster, `run-jobs.sh`.
-
-```{bash, code = readLines("../run-jobs.sh"), eval=FALSE}
+The root Makefile contained targets to regenerate all of the figures using:
+```{bash, eval=FALSE}
+make -j8 all
 ```
 
 The `*.stdout` files capture the output from each run; for each run,
