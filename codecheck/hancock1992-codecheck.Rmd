@@ -1,0 +1,320 @@
+---
+output:
+  pdf_document:
+    toc: false
+    includes:
+       in_header: preamble.sty
+  html_document:
+    self_contained: false
+    toc: true
+    toc_float: false
+---
+
+
+\centerline{\includegraphics[width=4cm]{codecheck_logo.pdf}}
+
+\vspace*{2cm}
+
+
+```{r rsetup-knitr,eval=TRUE,include=FALSE}
+require(knitr)
+require(xtable)
+require(yaml)
+require(tibble)
+require(readr)
+require(rprojroot)
+options(width=60)
+opts_chunk$set(cache=FALSE)
+
+yml_file = "codecheck.yml"
+root_project = find_root(yml_file)
+dest_dir = file.path(root_project, "codecheck", "outputs")
+
+yaml_data = read_yaml( file.path(root_project, yml_file) )
+
+manifest = yaml_data$manifest
+
+## Create the outputs directory if missing
+if ( !dir.exists(dest_dir) ) {
+  dir.create(dest_dir)
+}
+
+copy_files_to_dest_dir = function(root_project,
+                                  manifest,
+                                  dest_dir,
+                                  keep_full_path=FALSE) {
+  ## Copy each file mentioned in MANIFEST into DEST_DIR.
+  ## If KEEP_FULL_PATH is TRUE, we keep the full path for the output files.
+  ## This is useful when there are two output files with the same name in
+  ## different folders, e.g. expt1/out.pdf and expt2/out.pdf
+  ##
+  ## Return a vector of the names of the files created.
+  outputs = sapply(manifest, function(x) x$file)
+  src_files = file.path(root_project, outputs)
+  missing = !file.exists(src_files)
+  if (any(missing)) {
+    err = paste("Manifest files missing:\n",
+                paste(src_files[missing], sep='\n'))
+    stop(err)
+  }
+
+  dest_files = file.path(dest_dir,
+                         if ( keep_full_path) outputs else basename(outputs))
+  file.copy(src_files, dest_files, overwrite=TRUE)
+  dest_files
+}
+
+  
+get_outputs = function(manifest) {
+  files = sapply(manifest, function(x) x$file)
+  comments = sapply(manifest, function(x) x$comment)
+  sizes = file.size(dest_files)
+  url=sprintf('<a href="%s">%s</a>', dest_files, files)
+  table = cbind(files, comments, sizes, url)
+  table
+}
+
+dest_files = copy_files_to_dest_dir(root_project, manifest,
+                                    dest_dir, keep_full_path=FALSE)
+                                    
+```
+
+
+```{r,include=FALSE}
+## Temporary hack to make URL
+url_it = function(url) {
+  url = sub("<", "\\\\url{", url)
+  url = sub(">", "}", url)
+  url
+}
+```
+
+---
+title: `r paste("CODECHECK certificate", yaml_data$certificate)`
+subtitle: `r url_it(yaml_data$report)`
+---
+
+
+```{r, include=FALSE}
+codecheckers <- function(y) {
+  checker = y$codechecker[[1]]
+  paste(checker$name, url_it(checker$ORCID))
+}
+
+authors <- function(y) {
+  authors = y$paper$authors
+  num_authors = length(authors)
+  for (i in 1:num_authors)
+    if (i==1) {
+      author_list = authors[[i]]
+    } else {
+      author_list = paste(author_list, authors[[i]], sep=', ')
+    }
+  author_list
+}
+
+```
+
+```{r,include=FALSE}
+summary_entries = list(
+  "Title" =            yaml_data$paper$title,
+  "Authors" =          authors(yaml_data),
+  "Reference" =        url_it(yaml_data$paper$reference),
+  "Codechecker" =      codecheckers(yaml_data),
+  "Date of check:" =   yaml_data$check_time,
+  "Summary:" =         yaml_data$summary,
+  "Repository:" =      url_it(yaml_data$repository))
+summary_df = data.frame(Item=names(summary_entries),
+                Value=unlist(summary_entries, use.names=FALSE))
+```
+
+
+```{r,echo=FALSE,results='asis'}
+##kable(df, booktabs=FALSE, align=c('l', 'p{12cm}'), caption="CODECHECK Summary")
+print(xtable(summary_df, align=c('l', 'l', 'p{10cm}'),
+             caption='CODECHECK summary'),
+      include.rownames=FALSE,
+      include.colnames=TRUE,
+      sanitize.text.function = function(x){x},
+      comment=FALSE)
+```
+
+
+```{r, echo=FALSE,results='asis'}
+outputs = get_outputs(manifest)
+xt = xtable(outputs[,1:3], caption="Summary of output files generated")
+colnames(xt) = c("File", "Comment", "Size")
+print(xt,
+      include.rownames=FALSE,
+      comment=FALSE)
+```
+
+
+# Summary
+
+I was able to reproduce the figures and tables in the paper.  The
+simulations took several days to run, and so in the codechecker repo I
+have included the results of the simulations (the `*.qs` files).  The
+figures however are not included in the main section of the repo, but
+are in the `codecheck/outputs` folder.
+
+
+\clearpage
+
+# CODECHECKER notes
+
+The github repo <https://github.com/cmmid/covid-uk> contained all the
+necessary code.  I needed some
+system installations and R packages, but then was able to run the code.
+
+
+## Extra software installations
+
+Several extra linux and R packages were required.  These are
+documented in the file `install.R`, shown here:
+
+```{r, code = readLines("../install.R"), eval=FALSE}
+```
+
+I ran this on arch linux, but a Dockerfile is also available.
+
+
+
+## Running the software to regenerate outputs.
+
+The only significant change to the two scripts was to ensure covid
+path was the current directory WITH a trailing slash.
+
+```{r eval=FALSE}
+covid_uk_path = "./"
+```
+
+
+I created a script to run the jobs in parallel on a cluster, `run-jobs.sh`.
+
+```{bash, code = readLines("../run-jobs.sh"), eval=FALSE}
+```
+
+The `*.stdout` files capture the output from each run; for each run,
+there are two output files, e.g. for run 1: `1-dynamics.qs` and
+`1-totals.qs`.  These `*.qs` files are then processed by the script
+`UK-view.R` to make the output figures.
+
+```{bash, eval=FALSE}
+Rscript UK-view.R
+```
+
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\captionsetup[table]{labelformat=addC}
+\captionsetup[figure]{labelformat=addC}
+
+
+\clearpage
+```{r echo=FALSE, fig.cap=outputs[1, "comments"]}
+knitr::include_graphics(dest_files[1])
+```
+
+\clearpage
+
+
+<!-- The tables are quite wide, so we reduce the font size so that we -->
+<!-- can fit onto the page; could also use sidewaystable but that is a -->
+<!-- bit clunky. -->
+```{r, echo=FALSE, results='asis'}
+tab12week = read.csv(dest_files[2])
+print(xtable(tab12week, 
+             caption=outputs[2, "comments"]),
+      size="\\fontsize{6pt}{7pt}\\selectfont",
+      include.rownames=FALSE,
+      include.colnames=TRUE,
+      sanitize.text.function = function(x){x},
+      comment=FALSE)
+```
+
+\clearpage
+```{r echo=FALSE, fig.cap=outputs[3, "comments"]}
+knitr::include_graphics(dest_files[3])
+```
+
+\clearpage
+```{r echo=FALSE, fig.cap=outputs[4, "comments"]}
+knitr::include_graphics(dest_files[4])
+```
+
+\clearpage
+```{r echo=FALSE, fig.cap=outputs[5, "comments"]}
+knitr::include_graphics(dest_files[5])
+```
+
+
+\clearpage
+
+```{r, echo=FALSE, results='asis'}
+lockdown = read.csv(dest_files[6])
+print(xtable(lockdown, 
+             caption=outputs[6, "comments"]),
+      size="\\fontsize{6pt}{7pt}\\selectfont",
+      ##floating = TRUE, floating.environment = "sidewaystable",
+      include.rownames=FALSE,
+      include.colnames=TRUE,
+      sanitize.text.function = function(x){x},
+      comment=FALSE)
+```
+
+\clearpage
+
+```{r, echo=FALSE, results='asis'}
+print(xtable(read.csv(dest_files[7]),
+             caption=outputs[7, "comments"]),
+      size="\\fontsize{6pt}{7pt}\\selectfont",
+      floating = TRUE, floating.environment = "sidewaystable",
+      include.rownames=FALSE,
+      include.colnames=TRUE,
+      sanitize.text.function = function(x){x},
+      comment=FALSE)
+```
+
+\clearpage
+```{r, echo=FALSE, results='asis'}
+print(xtable(read.csv(dest_files[8]),
+             caption=outputs[8, "comments"]),
+      size="\\fontsize{6pt}{7pt}\\selectfont",
+      ##floating = TRUE, floating.environment = "sidewaystable",
+      include.rownames=FALSE,
+      include.colnames=TRUE,
+      sanitize.text.function = function(x){x},
+      comment=FALSE)
+```
+
+\clearpage
+```{r, echo=FALSE, results='asis'}
+print(xtable(read.csv(dest_files[9]),
+             caption=outputs[9, "comments"]),
+      size="\\fontsize{6pt}{7pt}\\selectfont",
+      ##floating = TRUE, floating.environment = "sidewaystable",
+      include.rownames=FALSE,
+      include.colnames=TRUE,
+      sanitize.text.function = function(x){x},
+      comment=FALSE)
+```
+
+
+
+
+\clearpage
+# About this document
+
+This document was created using Rmarkdown.  `make codecheck.pdf` will
+regenerate the file.
+
+```{r}
+sessionInfo()
+```
+
+
+
+
+<!-- 
+  rmarkdown::render("davies2020-codecheck.Rmd", output_format="pdf_document") 
+  -->
