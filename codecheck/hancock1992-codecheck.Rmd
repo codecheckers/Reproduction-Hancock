@@ -97,6 +97,8 @@ subtitle: `r url_it(yaml_data$report)`
 
 ```{r, include=FALSE}
 codecheckers <- function(y) {
+  ## TODO: this doesn't handle multiple codecheckers
+  ## TODO: should convert to url properly.
   checker = y$codechecker[[1]]
   paste(checker$name, url_it(checker$ORCID))
 }
