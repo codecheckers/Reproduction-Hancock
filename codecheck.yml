@@ -25,11 +25,9 @@ manifest:
     comment: manuscript Figure 8
 
 codechecker:
-  - firstname: Stephen J.
-    lastname:  Eglen
+  - name: Stephen J. Eglen
     ORCID: 0000-0001-8607-8025
-  - firstname: Daniel
-    lastname:  Nüst
+  - name: Daniel Nüst
     ORCID: 0000-0002-0024-5046
 
 summary:  Matlab code written by Iain Davies to reproduce original
