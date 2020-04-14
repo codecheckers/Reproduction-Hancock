@@ -28,6 +28,10 @@ codechecker:
   - firstname: Stephen J.
     lastname:  Eglen
     ORCID: 0000-0001-8607-8025
+  - firstname: Daniel
+    lastname:  Nüst
+    ORCID: 0000-0002-0024-5046
+
 summary:  Matlab code written by Iain Davies to reproduce original
   paper; natural images provided by Peter Hancock.
 repository: <https://github.com/codecheckers/Reproduction-Hancock>
