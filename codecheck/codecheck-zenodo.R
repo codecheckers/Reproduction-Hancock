@@ -3,7 +3,8 @@
 ## Code taken from Daniel's Hopfield reproduction.
 
 ## remotes
-remotes::install_github("sje30/zen4R")
+##remotes::install_github("sje30/zen4R")
+## remotes::install_github("eblondel/zen4R")
 
 require(zen4R)
 require(yaml)
@@ -54,8 +55,8 @@ deposit_draft$metadata$creators = NULL
 num_creators = length(codecheck_yaml$codechecker)
 for (i in 1:num_creators) {
   deposit_draft$addCreator(
-                  name = codecheck_yaml$codechecker[[i]]$name,
-                  orcid     = codecheck_yaml$codechecker[[i]]$ORCID)
+                  name  = codecheck_yaml$codechecker[[i]]$name,
+                  orcid = codecheck_yaml$codechecker[[i]]$ORCID)
 }
 
 
