@@ -16,10 +16,10 @@ hancock1992-codecheck.html: hancock1992-codecheck.Rmd ../codecheck.yml
 .PHONY: run clean
 
 clean:
-	rm -fr davies-codecheck.pdf outputs
+	rm -fr codecheck.pdf outputs
 
-## This takes just a minute or so to re-make the pdf outputs
+## to regenerate the figures takes about 5-10 mins per figure
 
 run:
-	cd ..; Rscript UK-view.R
+	cd ..; make
 
