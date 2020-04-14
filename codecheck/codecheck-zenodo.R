@@ -2,6 +2,9 @@
 ## [2020-04-10 Fri]
 ## Code taken from Daniel's Hopfield reproduction.
 
+## remotes
+remotes::install_github("sje30/zen4R")
+
 require(zen4R)
 require(yaml)
 yaml_file = "../codecheck.yml"
@@ -24,6 +27,8 @@ if (length(this_doi)==0) {
   ## capture the DOI and store it in the yml file, as we don't want to create a new one.
   this_doi = myrec$metadata$prereserve_doi$doi
   print(this_doi)
+} else {
+  this_doi = basename(this_doi)
 }
 
 
@@ -49,10 +54,19 @@ deposit_draft$metadata$creators = NULL
 num_creators = length(codecheck_yaml$codechecker)
 for (i in 1:num_creators) {
   deposit_draft$addCreator(
-                  firstname = codecheck_yaml$codechecker[[i]]$firstname,
-                  lastname  = codecheck_yaml$codechecker[[i]]$lastname,
+                  name = codecheck_yaml$codechecker[[i]]$name,
                   orcid     = codecheck_yaml$codechecker[[i]]$ORCID)
 }
+
+
+## check new code:
+## deposit_draft$metadata$creators = NULL
+## num_creators = length(codecheck_yaml$codechecker)
+## deposit_draft$addCreator( firstname = "Stephen", lastname = "Eglen",
+##                          orcid = "0000-0001-8607-8025")
+## deposit_draft$addCreator( name = "Daniel Nüst", orcid = "0000-0001-8607-8025")
+
+
 
 description_text = paste("CODECHECK certificate for paper:", codecheck_yaml$paper$title)
 repo_url = gsub("[<>]", "", codecheck_yaml$repository)
