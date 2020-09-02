@@ -1,5 +1,8 @@
 # Reproduction-Hancock
+
 Reproduction of Hancock, P. et al, 1991 The Principal Components of Natural Images
+
+Paper PDF publicly available at http://pdfs.semanticscholar.org/7dcf/a42cfe3b59becb441844b72558b361693608.pdf
 
 To use this code, clone the repository then run the makefile using "make all".
 
